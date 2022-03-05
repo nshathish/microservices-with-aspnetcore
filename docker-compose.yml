@@ -1,0 +1,30 @@
+version: '3.4'
+
+services:
+  productcatalog.api:
+    image: ${DOCKER_REGISTRY-}productcatalogapi
+    build:
+      context: .
+      dockerfile: ProductCatalog.Api/Dockerfile
+    depends_on:
+      - mongo_server
+
+  shoppingcart.api:
+    image: ${DOCKER_REGISTRY-}shoppingcartapi
+    build:
+      context: .
+      dockerfile: ShoppingCart.Api/Dockerfile
+    depends_on:
+      - mongo_server
+      - productcatalog.api
+
+  mongo_server:
+    image: mongo
+    container_name: mongo_server
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodata:/data/db
+  
+volumes:
+    mongodata:
