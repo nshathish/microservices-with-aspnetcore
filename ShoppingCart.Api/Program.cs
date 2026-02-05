@@ -1,26 +1,38 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using ShoppingCart.Api.Data.Entities;
+using ShoppingCart.Api.Endpoints.ShoppingCart;
+using ShoppingCart.Api.Infrastructure.Services;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Scalar.AspNetCore;
+using NShathish.Mongo.Driver.Extensions;
 
-namespace ShoppingCart.Api
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services
+builder.Services.AddMongo()
+    .AddMongoRepository<Cart>("baskets");
+builder.Services.AddHttpClient<IProductCatalogService, ProductCatalogService>(client =>
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
+    client.BaseAddress = new Uri("http://productcatalog.api:80");
+});
+builder.Services.AddOpenApi();
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
+var app = builder.Build();
+
+// Configure the HTTP request pipeline
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
 }
+
+app.MapOpenApi();
+app.MapScalarApiReference();
+
+app.UseRouting();
+
+// Map endpoints
+app.MapShoppingCartEndpoints();
+
+app.Run();

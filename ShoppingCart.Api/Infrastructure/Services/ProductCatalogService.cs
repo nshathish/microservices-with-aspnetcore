@@ -17,7 +17,7 @@
 
         public async Task<ProductCatalogItemDto> GetProductCatalogItemAsync(Guid id)
         {
-            var item = await _httpClient.GetFromJsonAsync<ProductCatalogItemDto>($"api/Products/{id}");
+            var item = await _httpClient.GetFromJsonAsync<ProductCatalogItemDto>($"/api/products/{id}");
             return item;
         }
     }

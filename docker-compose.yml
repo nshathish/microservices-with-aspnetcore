@@ -1,5 +1,3 @@
-version: '3.4'
-
 services:
   productcatalog.api:
     image: ${DOCKER_REGISTRY-}productcatalogapi
